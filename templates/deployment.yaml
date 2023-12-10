@@ -1,37 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "express-sqlite-charts.fullname" . }}
+  name: express-sqlite-charts
   labels:
-    {{- include "express-sqlite-charts.labels" . | nindent 4 }}
+    app: express-sqlite-charts
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: 3
   selector:
     matchLabels:
-      {{- include "express-sqlite-charts.selectorLabels" . | nindent 6 }}
+      app: express-sqlite-charts
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "express-sqlite-charts.selectorLabels" . | nindent 8 }}
+        app: express-sqlite-charts
     spec:
-      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        
       serviceAccountName: {{ include "express-sqlite-charts.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: express-sqlite-charts
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: hadilkortas/express-sqlite
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
